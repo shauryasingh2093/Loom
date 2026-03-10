@@ -10,7 +10,7 @@ Loom is an interactive, prototype application designed to help users visualize a
 ### Prototype Links
 * **Interactive Figma Site:** [View the prototype design here](https://trim-dude-63805125.figma.site)
 * **Original Figma Design:** [Figma Workspace](https://www.figma.com/design/YKkaFutn8frlMYJOXLXMOy/Figbuild_hackathon_loom)
-
+* **youtube link: [youtube](https://youtu.be/dvDvLD7TNzw)
 ---
 
 ## 🛠 Tech Stack
