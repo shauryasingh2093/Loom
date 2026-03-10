@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 export interface ThreadState {
   environment: number;
@@ -18,12 +18,23 @@ interface LoomContextType {
 const LoomContext = createContext<LoomContextType | null>(null);
 
 export function LoomProvider({ children }: { children: ReactNode }) {
-  const [stress, setStress] = useState(68);
-  const [threads, setThreads] = useState<ThreadState>({
-    environment: 48,
-    body: 80,
-    mind: 64,
+  const [stress, setStress] = useState(() => {
+    const saved = localStorage.getItem('loom_stress');
+    return saved ? JSON.parse(saved) : 68;
   });
+
+  const [threads, setThreads] = useState<ThreadState>(() => {
+    const saved = localStorage.getItem('loom_threads');
+    return saved ? JSON.parse(saved) : { environment: 48, body: 80, mind: 64 };
+  });
+
+  useEffect(() => {
+    localStorage.setItem('loom_stress', JSON.stringify(stress));
+  }, [stress]);
+
+  useEffect(() => {
+    localStorage.setItem('loom_threads', JSON.stringify(threads));
+  }, [threads]);
 
   const resolveStress = () => {
     setStress(18);

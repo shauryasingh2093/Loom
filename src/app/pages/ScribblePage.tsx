@@ -5,11 +5,11 @@ import { useLoom } from '../context/LoomContext';
 
 /* ─── Thread colour palette ─────────────────────────────────── */
 const THREAD_COLORS = [
-  { id: 'mind',        color: '#8858A4', label: 'Mind',        glyph: '✦' },
-  { id: 'body',        color: '#B84040', label: 'Body',        glyph: '◎' },
-  { id: 'environment', color: '#5BA891', label: 'Earth',       glyph: '≈' },
-  { id: 'ink',         color: '#3A3028', label: 'Ink',         glyph: '●' },
-  { id: 'gold',        color: '#C8883A', label: 'Gold',        glyph: '◇' },
+  { id: 'mind', color: '#8858A4', label: 'Mind', glyph: '✦' },
+  { id: 'body', color: '#B84040', label: 'Body', glyph: '◎' },
+  { id: 'environment', color: '#5BA891', label: 'Earth', glyph: '≈' },
+  { id: 'ink', color: '#3A3028', label: 'Ink', glyph: '●' },
+  { id: 'gold', color: '#C8883A', label: 'Gold', glyph: '◇' },
 ];
 
 const BRUSH_SIZES = [3, 6, 11, 18];
@@ -54,14 +54,22 @@ export function ScribblePage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const [strokes, setStrokes] = useState<Stroke[]>([]);
+  const [strokes, setStrokes] = useState<Stroke[]>(() => {
+    const saved = localStorage.getItem('loom_scribbles');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [currentStroke, setCurrentStroke] = useState<Stroke | null>(null);
   const [activeColor, setActiveColor] = useState(THREAD_COLORS[0]);
   const [brushSize, setBrushSize] = useState(BRUSH_SIZES[1]);
   const [opacity, setOpacity] = useState(0.85);
-  const [showPrompt, setShowPrompt] = useState(true);
+  const savedStrokesExist = strokes.length > 0;
+  const [showPrompt, setShowPrompt] = useState(!savedStrokesExist);
   const [saved, setSaved] = useState(false);
 
+  // Sync strokes to localStorage
+  useEffect(() => {
+    localStorage.setItem('loom_scribbles', JSON.stringify(strokes));
+  }, [strokes]);
   const drawing = useRef(false);
 
   /* ── Resize canvas ──────────────��──────────────────────── */
@@ -128,6 +136,8 @@ export function ScribblePage() {
   const handleSave = () => {
     setSaved(true);
     resolveStress();
+    // Clearing the scribbles when stress is resolved so the canvas is fresh next time
+    localStorage.removeItem('loom_scribbles');
     setTimeout(() => navigate('/balanced'), 1100);
   };
 
@@ -135,8 +145,8 @@ export function ScribblePage() {
   const bgTint = stress > 70
     ? 'rgba(184,64,64,0.04)'
     : stress > 40
-    ? 'rgba(200,136,58,0.04)'
-    : 'rgba(91,168,145,0.04)';
+      ? 'rgba(200,136,58,0.04)'
+      : 'rgba(91,168,145,0.04)';
 
   /* ── Prompts ────────────────────────────────────────────── */
   const prompts = [
@@ -196,7 +206,7 @@ export function ScribblePage() {
           }}
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M10 3L5 8L10 13" stroke="#5A5044" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M10 3L5 8L10 13" stroke="#5A5044" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
 
@@ -227,8 +237,8 @@ export function ScribblePage() {
           }}
         >
           <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-            <path d="M3 6H9C11.2 6 13 7.8 13 10C13 12.2 11.2 14 9 14H5" stroke="#8858A4" strokeWidth="1.4" strokeLinecap="round"/>
-            <path d="M5.5 3.5L3 6L5.5 8.5" stroke="#8858A4" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M3 6H9C11.2 6 13 7.8 13 10C13 12.2 11.2 14 9 14H5" stroke="#8858A4" strokeWidth="1.4" strokeLinecap="round" />
+            <path d="M5.5 3.5L3 6L5.5 8.5" stroke="#8858A4" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
       </motion.div>
@@ -403,7 +413,7 @@ export function ScribblePage() {
           {/* Opacity slider */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 7, flex: 1 }}>
             <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-              <circle cx="6.5" cy="6.5" r="5.5" stroke={activeColor.color} strokeWidth="1.3" fill={`${activeColor.color}30`}/>
+              <circle cx="6.5" cy="6.5" r="5.5" stroke={activeColor.color} strokeWidth="1.3" fill={`${activeColor.color}30`} />
             </svg>
             <input
               type="range"
